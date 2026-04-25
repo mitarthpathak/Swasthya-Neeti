@@ -1,0 +1,199 @@
+Voice Flow Plan
+
+Your app's voice model should work in this order:
+
+1. User clicks the Mic Button
+2. Browser checks microphone permission
+3. MediaRecorder starts capturing audio
+4. Audio chunks are stored temporarily in memory
+5. User clicks Stop
+6. Recorder creates the final audio blob
+7. Frontend sends the blob to backend /api/transcribe using FormData
+8. Backend validates the audio
+9. Backend sends the audio to Groq Whisper
+10. Groq returns transcript text
+11. Backend cleans and validates transcript
+12. Backend returns JSON response to frontend
+13. Frontend fills transcript into the input box
+14. User clicks Send
+15. Chat API processes the message and shows reply
+
+Elements To Use
+
+Frontend UI elements:
+- Mic Button
+- Stop Button or mic toggle button
+- Text Input
+- Send Button
+- Voice Status Message
+- Permission Error Message
+- Transcription Loading Indicator
+- Chat Messages Container
+
+Frontend state and logic:
+- isRecordingVoice
+- isTranscribingVoice
+- voiceComment
+- inputValue
+- mediaRecorderRef
+- mediaStreamRef
+- audioChunksRef
+- recordingStartedAtRef
+- selectedLanguage
+
+Browser APIs:
+- navigator.mediaDevices.getUserMedia
+- MediaRecorder
+- Blob
+- FormData
+
+Frontend service layer:
+- transcribeAudioRequest()
+- sendChatMessageRequest()
+- apiRequest()
+- parseApiJson()
+
+Backend elements:
+- POST /api/transcribe
+- multer upload middleware
+- audio validation logic
+- mime or extension resolver
+- silence or hallucination filter
+- Groq transcription request handler
+
+External API:
+- Groq Whisper API
+- Model: whisper-large-v3-turbo
+
+Who Connects To What
+
+UI connections:
+- Mic Button -> startVoiceRecording()
+- Stop Button -> stopVoiceRecording()
+- Voice Status Message <- recorder state and backend response
+- Text Input <- transcript result
+- Send Button -> sendMessage()
+
+Recording connections:
+- startVoiceRecording() -> getUserMedia() -> MediaRecorder
+- MediaRecorder.ondataavailable -> audioChunksRef
+- stopVoiceRecording() -> final Blob
+
+Network connections:
+- final Blob -> FormData
+- FormData -> transcribeAudioRequest()
+- transcribeAudioRequest() -> /api/transcribe
+
+Backend connections:
+- /api/transcribe -> multer.single('audio')
+- uploaded file -> validation
+- validated file -> Groq transcription API
+- Groq response -> cleaned transcript JSON
+
+Chat connections:
+- transcript JSON -> frontend inputValue
+- inputValue -> sendChatMessageRequest()
+- /api/chat -> assistant reply
+- reply -> Chat Messages Container
+
+Recommended Frontend Functions
+
+- handleVoiceButtonClick()
+- startVoiceRecording()
+- stopVoiceRecording()
+- transcribeRecordedAudio()
+- sendMessage()
+
+Recommended Backend Functions
+
+- resolveLanguageCode()
+- resolveExtension()
+- validateAudioFile()
+- isLikelyHallucination()
+- transcribeWithGroq()
+
+Validation Rules
+
+Frontend:
+- microphone permission must be granted
+- minimum recording duration should be around 1.5 to 2 seconds
+- user should not be able to trigger double recording while transcription is running
+- status text should clearly show:
+  - Recording...
+  - Processing...
+  - Converting voice to text...
+  - Voice added to message box.
+  - proper error messages
+
+Backend:
+- audio file is required
+- file size must be above a minimum threshold
+- mime type or extension must be supported
+- Groq API errors must be handled clearly
+- response must always be JSON
+
+Ideal API Response
+
+Success:
+{
+  "success": true,
+  "text": "I have fever and cold symptoms"
+}
+
+Error:
+{
+  "success": false,
+  "error": "Microphone audio was too short"
+}
+
+Best Architecture
+
+Mic Button
+-> MediaRecorder
+-> Audio Blob
+-> FormData
+-> /api/transcribe
+-> Groq whisper-large-v3-turbo
+-> transcript JSON
+-> inputValue
+-> Send Button
+-> /api/chat
+-> response in chat UI
+
+Important Notes
+
+- chatpage and low-resources should both use the same voice service flow
+- duplicate voice logic should be minimized
+- a shared voice utility would be better long term
+- frontend should never directly call Groq
+- only backend should call Groq API
+- backend should always return JSON, never HTML
+
+Suggested File Responsibilities
+
+- src/components/ChatWorkspace.tsx
+  Handles main chat UI voice buttons and transcript-to-input behavior
+
+- src/components/LowResources.tsx
+  Handles low-resource UI voice buttons and transcript-to-input behavior
+
+- src/services/chatApi.ts
+  Sends audio to /api/transcribe and parses JSON response
+
+- src/services/api.ts
+  Shared API URL and JSON parsing layer
+
+- server/routes/transcribe.js
+  Accepts uploaded audio, validates it, sends it to Groq, and returns transcript JSON
+
+- server/index.js
+  Registers API routes and starts backend server
+
+Definition Of Working Voice Input
+
+- User clicks mic
+- Speaks for a few seconds
+- Clicks stop
+- Transcript appears in input box
+- User can send that text as a normal chat message
+- This must work in both main chat and low-resource chat

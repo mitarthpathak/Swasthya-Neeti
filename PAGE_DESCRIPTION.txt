@@ -1,0 +1,52 @@
+Page overview for the Swasthya-Neeti landing page (excluding the fixed header/topbar)
+
+Theme and colors:
+- The page uses a warm, earthy palette with a soft cream background (#f7f1e8) and a pale surface tone (#fffaf4).
+- Accent colors are bright coral-orange (#ff7a59), deep teal (#0f8b8d), and golden yellow (#f4c95d).
+- Text is mainly dark brown/black (#1d1a16) with softer surface variants (#62584d) for body copy.
+- Background uses layered gradients and radial blurs to create a gentle, friendly atmosphere with a subtle rural/health-tech feel.
+
+Fonts used:
+- "Manrope" is the primary sans-serif font used for body text and general UI text.
+- "Syne" is used for headings and headline typography, giving the page a bold, modern display style.
+- The font imports come from Google Fonts in `src/index.css`.
+
+Page structure and elements:
+- The main page is built in `src/App.tsx` with a hero section, a scrollytelling story section, and a features section.
+- The hero section includes:
+  - An eyebrow label: "Health guidance that reaches beyond the city"
+  - A large headline with a highlighted rural India callout.
+  - Supporting hero text describing Swasthya-Neeti as voice-first guidance for families.
+  - A metric row with three cards showing product focus points: "Designed for", "Core promise", "Ideal channels".
+  - Two CTA buttons: "Start the story" and "Why it matters".
+  - A rich visual panel with floating medicine kit art, orbiting pills, halo glows, and two floating info cards.
+  - A scroll cue at the bottom prompting users to continue.
+- The scrollytelling story section includes:
+  - A sticky left panel labeled "Live narrative" that stays in view as the user scrolls.
+  - The sticky frame shows the current chapter headline, detail text, current chapter label, and focus stat.
+  - A set of chapter indicator dots that highlight the active chapter color.
+  - The story steps on the right are four large story cards, each representing a chapter of the narrative.
+  - Each story card has index numbers, eyebrow text, title, description, and a stat badge.
+- The features section presents four feature cards with icons and text describing core product capabilities.
+
+How the live narrative scroll works:
+- The page uses a scroll progress indicator at the top: a fixed `.progress-bar` whose width is animated from 0% to 100% using `motion` and `useScroll`.
+- The sticky story panel is implemented with CSS `position: sticky` inside the `.story-grid` section, keeping the narrative box visible while the user scrolls through the cards.
+- The active chapter is detected with an `IntersectionObserver` in `App.tsx`.
+  - It observes each story card element by `id`.
+  - When a card is in view, the observer updates `activeChapter` based on the most visible card.
+  - The sticky narrative panel then renders the current chapter’s title, detail, eyebrow, and stat, keeping the live narrative synchronized with scroll position.
+- The chapter dots update visually based on the same `activeChapter` state, changing scale and accent color for the active step.
+
+Key UI components and patterns on the page:
+- Hero copy with bold headline and descriptive text.
+- Floating animated visual scene with glow halos, moving pills, and the medicine kit.
+- Sticky narrative storytelling panel.
+- Large vertically spaced story cards that occupy most of viewport height, creating a scrollytelling experience.
+- Cards and panels use soft pastel surfaces, rounded corners, subtle borders, and shadows for a tactile feel.
+- Feature cards use icon-led summaries and progressive animation when they appear in view.
+
+Overall page feel:
+- The design is warm, optimistic, and approachable, with an emphasis on trust and accessibility for rural health users.
+- The live narrative section creates a sense of guided storytelling, making the page feel more interactive than a static landing page.
+- Fonts and color choices support clarity and legibility while keeping the style modern and friendly.

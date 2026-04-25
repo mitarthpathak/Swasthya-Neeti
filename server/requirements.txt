@@ -1,0 +1,4 @@
+# For Node.js (your current project)
+groq-sdk
+
+# Note: mongoose and dotenv are already installed in your package.json.
