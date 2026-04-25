@@ -188,6 +188,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState(() => getCurrentPageFromHash(window.location.hash));
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [activeChapter, setActiveChapter] = useState(chapters[0].id);
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
   const kitSectionRef = useRef<HTMLElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: kitSectionRef,
@@ -208,13 +209,14 @@ export default function App() {
   const componentLift = useTransform(kitProgress, [0.38, 0.65, 1], [56, -18, -64]);
   const componentSpread = useTransform(kitProgress, [0.4, 0.7, 1], [0, 1, 1.42]);
   const backGlow = useTransform(kitProgress, [0, 0.5, 1], [0.35, 0.55, 0.2]);
-  const bottleX = useTransform(componentSpread, [0, 1.42], [0, -214]);
-  const stripX = useTransform(componentSpread, [0, 1.42], [0, -78]);
+  const kitSpreadScale = viewportWidth <= 640 ? 0.48 : viewportWidth <= 1080 ? 0.72 : 1;
+  const bottleX = useTransform(componentSpread, [0, 1.42], [0, -214 * kitSpreadScale]);
+  const stripX = useTransform(componentSpread, [0, 1.42], [0, -78 * kitSpreadScale]);
   const stripRotate = useTransform(componentSpread, [0, 1.42], [0, -16]);
-  const cardX = useTransform(componentSpread, [0, 1.42], [0, 142]);
+  const cardX = useTransform(componentSpread, [0, 1.42], [0, 142 * kitSpreadScale]);
   const cardRotate = useTransform(componentSpread, [0, 1.42], [0, 11]);
-  const chatX = useTransform(componentSpread, [0, 1.42], [0, 236]);
-  const stethoX = useTransform(componentSpread, [0, 1.42], [0, 58]);
+  const chatX = useTransform(componentSpread, [0, 1.42], [0, 236 * kitSpreadScale]);
+  const stethoX = useTransform(componentSpread, [0, 1.42], [0, 58 * kitSpreadScale]);
   const stethoRotate = useTransform(componentSpread, [0, 1.42], [0, 18]);
 
   useEffect(() => {
@@ -226,6 +228,13 @@ export default function App() {
     window.addEventListener('hashchange', syncPageWithHash);
 
     return () => window.removeEventListener('hashchange', syncPageWithHash);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {

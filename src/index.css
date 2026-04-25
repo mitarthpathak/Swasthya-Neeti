@@ -1094,6 +1094,7 @@ body::-webkit-scrollbar-thumb:hover,
 .kit-story-copy {
   display: grid;
   gap: 1.4rem;
+  min-width: 0;
 }
 
 .kit-copy-card,
@@ -1194,6 +1195,7 @@ body::-webkit-scrollbar-thumb:hover,
 
 .kit-story-visual {
   position: relative;
+  min-width: 0;
 }
 
 .kit-visual-frame {
@@ -4139,13 +4141,23 @@ body::-webkit-scrollbar-thumb:hover,
     min-height: 34rem;
   }
 
+  .kit-story-visual {
+    order: -1;
+  }
+
+  .kit-story-copy {
+    order: 1;
+  }
+
   .kit-visual-frame {
-    min-height: 32rem;
+    position: relative;
+    top: 0;
+    min-height: 34rem;
   }
 
   .story-card,
   .kit-copy-card {
-    min-height: 58vh;
+    min-height: auto;
   }
 
   .chat-visual-stage {
@@ -4178,6 +4190,30 @@ body::-webkit-scrollbar-thumb:hover,
 
   .hero-section {
     padding-top: 9rem;
+  }
+
+  .hero-section,
+  .kit-story,
+  .story-grid,
+  .vision-section,
+  .cta-section {
+    width: min(100% - 1rem, 100%);
+  }
+
+  .brand-name {
+    font-size: clamp(1.8rem, 9vw, 2.6rem);
+  }
+
+  .brand-kicker {
+    letter-spacing: 0.14em;
+  }
+
+  .topbar-link,
+  .button-primary,
+  .auth-link,
+  .auth-button {
+    width: 100%;
+    justify-content: center;
   }
 
   .chat-topbar {
@@ -4247,8 +4283,45 @@ body::-webkit-scrollbar-thumb:hover,
 
   .hero-box,
   .sticky-box {
-    width: 20rem;
-    height: 16.4rem;
+    width: min(20rem, calc(100vw - 2.5rem));
+    height: min(16.4rem, calc((100vw - 2.5rem) * 0.82));
+  }
+
+  .hero-visual-shell {
+    min-height: 24rem;
+  }
+
+  .kit-story {
+    gap: 1rem;
+    padding: 2rem 0 1.5rem;
+  }
+
+  .kit-visual-frame {
+    min-height: 24rem;
+    padding: 1.2rem;
+  }
+
+  .kit-glow-ring {
+    width: min(24rem, 86vw);
+    height: min(24rem, 86vw);
+  }
+
+  .kit-copy-card,
+  .story-card {
+    min-height: auto;
+    padding: 1.35rem;
+  }
+
+  .kit-copy-card h3,
+  .sticky-frame h3,
+  .story-card h3 {
+    font-size: clamp(1.85rem, 9vw, 2.7rem);
+    line-height: 1.02;
+  }
+
+  .story-stat {
+    margin-top: 1rem;
+    padding: 0.7rem 0.9rem;
   }
 
   .feature-grid,
@@ -4270,6 +4343,12 @@ body::-webkit-scrollbar-thumb:hover,
 
   .chat-page-layout {
     padding-top: 1rem;
+  }
+
+  .sticky-frame {
+    position: relative;
+    top: 0;
+    padding: 1.35rem;
   }
 
   .chat-hero-panel {
