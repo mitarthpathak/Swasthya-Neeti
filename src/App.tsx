@@ -8,10 +8,12 @@ import {
   Languages,
   LayoutDashboard,
   MapPinned,
+  Menu,
   PackagePlus,
   ShieldCheck,
   Sparkles,
   Stethoscope,
+  X,
 } from 'lucide-react';
 import { AuthModal, CURRENT_USER_KEY } from './components/AuthModal';
 import { BrandLogo } from './components/BrandLogo';
@@ -189,6 +191,7 @@ export default function App() {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [activeChapter, setActiveChapter] = useState(chapters[0].id);
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const kitSectionRef = useRef<HTMLElement | null>(null);
   const { scrollYProgress } = useScroll({
     target: kitSectionRef,
@@ -218,6 +221,7 @@ export default function App() {
   const chatX = useTransform(componentSpread, [0, 1.42], [0, 236 * kitSpreadScale]);
   const stethoX = useTransform(componentSpread, [0, 1.42], [0, 58 * kitSpreadScale]);
   const stethoRotate = useTransform(componentSpread, [0, 1.42], [0, 18]);
+  const isCompactHeader = viewportWidth <= 720;
 
   useEffect(() => {
     const syncPageWithHash = () => {
@@ -238,7 +242,14 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!isCompactHeader && isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  }, [isCompactHeader, isMobileMenuOpen]);
+
+  useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    setIsMobileMenuOpen(false);
   }, [currentPage]);
 
   useEffect(() => {
@@ -407,7 +418,7 @@ export default function App() {
     <>
       <div className="site-shell" id="top">
         <motion.header
-          className="topbar"
+          className={isMobileMenuOpen ? 'topbar menu-open' : 'topbar'}
           initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, ease: 'easeOut' }}
@@ -425,55 +436,141 @@ export default function App() {
             </div>
           </motion.div>
 
-          <motion.div
-            className="topbar-actions"
-            initial={{ opacity: 0, x: 18 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.18 }}
-          >
-            {user && (
-              <a className="topbar-link" href="#dashboard">
-                Dashboard
-                <LayoutDashboard size={16} />
-              </a>
-            )}
-            <a className="topbar-link" href="#chat-page">
-              Live narrative
-              <ArrowUpRight size={16} />
-            </a>
-            {user ? (
+          {isCompactHeader ? (
+            <>
               <button
-                className="profile-chip-button"
-                onClick={() => setIsProfileModalOpen(true)}
+                aria-expanded={isMobileMenuOpen}
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                className="mobile-menu-button auth-button-reset"
+                onClick={() => setIsMobileMenuOpen((open) => !open)}
                 type="button"
               >
-                <span className="profile-chip-avatar">
-                  {user.username.slice(0, 2).toUpperCase()}
-                </span>
-                <span className="profile-chip-copy">
-                  <strong>{user.username}</strong>
-                  <small>View profile</small>
-                </span>
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
-            ) : (
-              <>
+
+              <AnimatePresence initial={false}>
+                {isMobileMenuOpen && (
+                  <motion.div
+                    className="topbar-mobile-dropdown"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.18, ease: 'easeOut' }}
+                  >
+                    {user && (
+                      <a
+                        className="topbar-link"
+                        href="#dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Dashboard
+                        <LayoutDashboard size={16} />
+                      </a>
+                    )}
+                    <a
+                      className="topbar-link"
+                      href="#chat-page"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Live narrative
+                      <ArrowUpRight size={16} />
+                    </a>
+                    {user ? (
+                      <button
+                        className="profile-chip-button mobile-profile-button"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          setIsProfileModalOpen(true);
+                        }}
+                        type="button"
+                      >
+                        <span className="profile-chip-avatar">
+                          {user.username.slice(0, 2).toUpperCase()}
+                        </span>
+                        <span className="profile-chip-copy">
+                          <strong>{user.username}</strong>
+                          <small>View profile</small>
+                        </span>
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          className="auth-link auth-button-reset"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            openAuthModal('signin');
+                          }}
+                          type="button"
+                        >
+                          Sign in
+                        </button>
+                        <button
+                          className="auth-button auth-button-reset"
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            openAuthModal('signup');
+                          }}
+                          type="button"
+                        >
+                          Sign up
+                        </button>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          ) : (
+            <motion.div
+              className="topbar-actions"
+              initial={{ opacity: 0, x: 18 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.18 }}
+            >
+              {user && (
+                <a className="topbar-link" href="#dashboard">
+                  Dashboard
+                  <LayoutDashboard size={16} />
+                </a>
+              )}
+              <a className="topbar-link" href="#chat-page">
+                Live narrative
+                <ArrowUpRight size={16} />
+              </a>
+              {user ? (
                 <button
-                  className="auth-link auth-button-reset"
-                  onClick={() => openAuthModal('signin')}
+                  className="profile-chip-button"
+                  onClick={() => setIsProfileModalOpen(true)}
                   type="button"
                 >
-                  Sign in
+                  <span className="profile-chip-avatar">
+                    {user.username.slice(0, 2).toUpperCase()}
+                  </span>
+                  <span className="profile-chip-copy">
+                    <strong>{user.username}</strong>
+                    <small>View profile</small>
+                  </span>
                 </button>
-                <button
-                  className="auth-button auth-button-reset"
-                  onClick={() => openAuthModal('signup')}
-                  type="button"
-                >
-                  Sign up
-                </button>
-              </>
-            )}
-          </motion.div>
+              ) : (
+                <>
+                  <button
+                    className="auth-link auth-button-reset"
+                    onClick={() => openAuthModal('signin')}
+                    type="button"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    className="auth-button auth-button-reset"
+                    onClick={() => openAuthModal('signup')}
+                    type="button"
+                  >
+                    Sign up
+                  </button>
+                </>
+              )}
+            </motion.div>
+          )}
         </motion.header>
 
         <main>
