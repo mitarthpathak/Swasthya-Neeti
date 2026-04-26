@@ -3,7 +3,12 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/api/chat",            "destination": "/api/chat/[[...path]]" },
+    { "source": "/api/chat/:path*",     "destination": "/api/chat/[[...path]]" },
+    { "source": "/api/auth/:path*",     "destination": "/api/auth/[[...path]]" },
+    { "source": "/api/reminders",       "destination": "/api/reminders/[[...path]]" },
+    { "source": "/api/reminders/:path*","destination": "/api/reminders/[[...path]]" },
+    { "source": "/((?!api/).*)",        "destination": "/index.html" }
   ],
   "functions": {
     "api/**/*.js": {
