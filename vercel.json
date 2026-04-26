@@ -3,14 +3,6 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/auth/(.*)", "destination": "/api/auth/[[...path]]" },
-    { "source": "/api/chat/(.*)", "destination": "/api/chat/[[...path]]" },
-    { "source": "/api/reminders/(.*)", "destination": "/api/reminders/[[...path]]" },
-    { "source": "/api/health-updates", "destination": "/api/health-updates" },
-    { "source": "/api/health", "destination": "/api/health" },
-    { "source": "/api/transcribe", "destination": "/api/transcribe" },
-    { "source": "/api/upload", "destination": "/api/upload" },
-    { "source": "/api/graphs", "destination": "/api/graphs" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
