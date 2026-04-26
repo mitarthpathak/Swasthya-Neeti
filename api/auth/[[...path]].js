@@ -11,7 +11,12 @@ export default async function handler(req, res) {
 
   const path = req.url?.split('?')[0]?.replace(/^\/api\/auth\//, '') || '';
 
-  await connectToDatabase();
+  try {
+    await connectToDatabase();
+  } catch (dbErr) {
+    console.error('[auth] DB connection error:', dbErr);
+    return res.status(503).json({ success: false, error: 'Database connection failed: ' + (dbErr.message || String(dbErr)) });
+  }
 
   if (mongoose.connection.readyState !== 1) {
     return res.status(503).json({ success: false, error: 'Database connection is not ready' });

@@ -7,7 +7,12 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  await connectToDatabase();
+  try {
+    await connectToDatabase();
+  } catch (dbErr) {
+    console.error('[graphs] DB connection error:', dbErr);
+    return res.status(503).json({ success: false, error: 'Database connection failed: ' + (dbErr.message || String(dbErr)) });
+  }
 
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);

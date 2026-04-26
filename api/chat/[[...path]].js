@@ -51,10 +51,16 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  await connectToDatabase();
+  try {
+    await connectToDatabase();
+  } catch (dbErr) {
+    console.error('[chat] DB connection error:', dbErr);
+    return res.status(503).json({ success: false, error: 'Database connection failed: ' + (dbErr.message || String(dbErr)) });
+  }
 
+  const rawPath = (req.url || '').split('?')[0];
+  const path = rawPath.replace(/^\/api\/chat\/?/, '');
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const path = url.pathname.replace(/^\/api\/chat\/?/, '');
 
   // GET /api/chat/history
   if (req.method === 'GET' && (path === 'history' || path === '')) {
