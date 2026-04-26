@@ -2,12 +2,29 @@ import { connectToDatabase } from '../_shared/db.js';
 import { createUserAccount, authenticateUser } from '../_shared/auth.js';
 import mongoose from 'mongoose';
 
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body;
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => {
+      try { resolve(JSON.parse(data)); } catch { resolve({}); }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
+
 export default async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Parse body manually — Vercel does not auto-parse req.body for ESM functions
+  if (req.method === 'POST') {
+    req.body = await parseBody(req);
+  }
 
   const path = req.url?.split('?')[0]?.replace(/^\/api\/auth\//, '') || '';
 

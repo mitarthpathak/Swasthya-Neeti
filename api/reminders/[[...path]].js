@@ -1,11 +1,28 @@
 import { connectToDatabase } from './_shared/db.js';
 import { Reminder } from './_shared/models.js';
 
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') return req.body;
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => {
+      try { resolve(JSON.parse(data)); } catch { resolve({}); }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Parse body manually — Vercel does not auto-parse req.body for ESM functions
+  if (req.method === 'POST') {
+    req.body = await parseBody(req);
+  }
 
   try {
     await connectToDatabase();
