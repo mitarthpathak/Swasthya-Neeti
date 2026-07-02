@@ -1,20 +1,33 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Swasthya-Neeti 🏥
 
-# Run and deploy your AI Studio app
+A React-based healthcare management and awareness platform designed to simplify health tracking, provide resources, and promote preventive care.  
+This project is built with **React**, integrates modern UI components, and is deployable on platforms like **Vercel** or **Netlify**.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/e2ba361b-a801-4318-a387-6f9122cb5f22
+## 🚀 Features
+- 📊 **Health Dashboard** – Track health metrics and visualize progress.
+- 🧾 **Medical Records** – Store and manage patient information securely.
+- 📚 **Awareness Hub** – Articles, tips, and resources for preventive healthcare.
+- 🔔 **Notifications** – Reminders for checkups, medicines, and health goals.
+- 🌐 **Responsive Design** – Works seamlessly across devices.
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+## 🛠️ Tech Stack
+- **Frontend:** React, JavaScript, HTML, CSS
+- **State Management:** React Hooks / Context API
+- **Deployment:** Vercel / Netlify
+- **Version Control:** Git & GitHub
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📂 Project Setup
+
+Follow these steps to run the project locally:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/mitarthpathak/Swasthya-Neeti.git
+   cd Swasthya-Neeti
+```
