@@ -18,8 +18,10 @@ export interface UploadStatus {
 export interface User {
   id?: string;
   username: string;
+  name?: string;
   email: string;
   password?: string;
   age: string;
   gender?: string;
+  phone?: string;
 }

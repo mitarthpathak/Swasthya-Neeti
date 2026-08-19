@@ -7,7 +7,10 @@ import GraphModel from '../models/Graph.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
-const GROQ_MODEL = 'llama-3.1-8b-instant';
+const configuredGroqModel = process.env.GROQ_MODEL?.trim();
+const GROQ_MODEL = configuredGroqModel && configuredGroqModel !== 'llama-3.1-8b-instant'
+  ? configuredGroqModel
+  : 'groq/compound-mini';
 
 function chunkText(text, size = 100000) {
   const chunks = [];

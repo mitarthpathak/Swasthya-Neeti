@@ -15,6 +15,6 @@ View your app in AI Studio: https://ai.studio/apps/e2ba361b-a801-4318-a387-6f912
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Copy `.env.example` to `.env`, then set `GROQ_API_KEY` to your Groq API key. The default model is `groq/compound-mini`.
 3. Run the app:
    `npm run dev`

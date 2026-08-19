@@ -1,4 +1,5 @@
-const DEFAULT_MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+const DEFAULT_MODEL = 'groq/compound-mini';
+const LEGACY_MODEL = 'llama-3.1-8b-instant';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GOOGLE_TRANSLATE_API_URL = 'https://translate.googleapis.com/translate_a/single';
 
@@ -7,7 +8,13 @@ export function isGroqConfigured() {
 }
 
 export function getGroqModel() {
-  return process.env.GROQ_MODEL || DEFAULT_MODEL;
+  const configuredModel = process.env.GROQ_MODEL?.trim();
+
+  // Older local deployments may still carry this former default in their
+  // environment. Fall back to Compound Mini so chat requests keep working.
+  return configuredModel && configuredModel !== LEGACY_MODEL
+    ? configuredModel
+    : DEFAULT_MODEL;
 }
 
 export async function getGroqHealth() {

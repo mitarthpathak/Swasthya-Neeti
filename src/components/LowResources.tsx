@@ -846,7 +846,7 @@ export function LowResources({
                 <div className="low-resource-chat-title">
                   <BrandLogo className="low-resource-mini-brand" imageClassName="low-resource-brand-mark-image" />
                   <div>
-                    <strong>{uiCopy.chatTitle}</strong>
+                    <strong>{uiCopy.assistantTitle}</strong>
                     <span>{isTranslatingUi ? 'Translating interface...' : uiCopy.statusOnline}</span>
                   </div>
                 </div>
@@ -867,7 +867,7 @@ export function LowResources({
                       <BrandLogo className="low-resource-mini-brand" imageClassName="low-resource-brand-mark-image" />
                       <div>
                         <strong>{displayName}</strong>
-                        <p>{uiCopy.heroSubtitle}</p>
+                        <p>{uiCopy.introMessage}</p>
                       </div>
                     </div>
                   </div>
@@ -884,7 +884,7 @@ export function LowResources({
                       <span className="low-resource-message-mark user">{userInitials}</span>
                     )}
                     <article className={`low-resource-message-card${message.isError ? ' is-error' : ''}`}>
-                      {message.role === 'assistant' ? <strong>{uiCopy.chatTitle}</strong> : null}
+                      {message.role === 'assistant' ? <strong>{uiCopy.assistantReplyLabel}</strong> : null}
                       {message.role === 'assistant' ? (
                         <div className="markdown-renderer">
                           <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -901,8 +901,8 @@ export function LowResources({
                   <div className="low-resource-message-row is-assistant">
                     <BrandLogo className="low-resource-message-mark" imageClassName="low-resource-brand-mark-image" />
                     <article className="low-resource-message-card">
-                      <strong>{uiCopy.chatTitle}</strong>
-                      <p>{uiCopy.sendingLabel}</p>
+                      <strong>{uiCopy.assistantReplyLabel}</strong>
+                      <p>{uiCopy.thinkingMessage}</p>
                     </article>
                   </div>
                 ) : null}
@@ -939,7 +939,7 @@ export function LowResources({
                       void sendMessage(inputValue);
                     }
                   }}
-                  placeholder={uiCopy.chatInputPlaceholder}
+                  placeholder={uiCopy.inputPlaceholder}
                   type="text"
                   value={inputValue}
                 />
@@ -983,10 +983,10 @@ export function LowResources({
             <section className="low-resource-side-card">
               <div className="low-resource-side-head">
                 <Languages size={16} />
-                <strong>{uiCopy.languageCardTitle}</strong>
+                <strong>{uiCopy.chatLanguage}</strong>
               </div>
               <label className="low-resource-language-picker">
-                <span>{uiCopy.languageLabel}</span>
+                <span>{uiCopy.chatLanguage}</span>
                 <select onChange={(event) => setSelectedLanguage(event.target.value)} value={selectedLanguage}>
                   {languages.map((language) => (
                     <option key={language} value={language}>
@@ -999,9 +999,9 @@ export function LowResources({
 
             <section className="low-resource-side-card">
               <a className="low-resource-callout" href="tel:9587507407">
-                {uiCopy.callDoctorButton}
+                {uiCopy.callExpert}
               </a>
-              <p className="low-resource-callout-text">{uiCopy.emergencyBanner}</p>
+              <p className="low-resource-callout-text">{uiCopy.emergencyGuidance}</p>
               <div className="low-resource-tool-list">
                 <button className="low-resource-flat-button" onClick={() => setIsSidebarOpen(true)} type="button">
                   <Clock3 size={16} />
