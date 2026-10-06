@@ -5,13 +5,32 @@
 const DEFAULT_MODEL = 'groq/compound-mini';
 const LEGACY_MODEL = 'llama-3.1-8b-instant';
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash';
+
+// Gemini is used whenever GEMINI_API_KEY is set; otherwise fall back to Groq.
+export function isGeminiConfigured() {
+  return Boolean(process.env.GEMINI_API_KEY);
+}
+
+export function getLlmEndpoint() {
+  return isGeminiConfigured() ? GEMINI_API_URL : GROQ_API_URL;
+}
+
+export function getLlmApiKey() {
+  return isGeminiConfigured() ? process.env.GEMINI_API_KEY : process.env.GROQ_API_KEY;
+}
 const GOOGLE_TRANSLATE_API_URL = 'https://translate.googleapis.com/translate_a/single';
 
 export function isGroqConfigured() {
-  return Boolean(process.env.GROQ_API_KEY);
+  return Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY);
 }
 
 export function getGroqModel() {
+  if (isGeminiConfigured()) {
+    return process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
+  }
+
   const configuredModel = process.env.GROQ_MODEL?.trim();
 
   // Older deployments may still carry this former default in their environment.
@@ -174,12 +193,12 @@ async function createGroqCompletion({
   maxTokens = 700,
   responseFormat,
 }) {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = getLlmApiKey();
   if (!apiKey) {
     throw new Error('GROQ_API_KEY is not set');
   }
 
-  const response = await fetch(GROQ_API_URL, {
+  const response = await fetch(getLlmEndpoint(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -371,12 +390,12 @@ export async function callAIWithRetry(fn, retries = 3, delay = 5000) {
  * Raw Groq completion for upload analysis
  */
 export async function callGroqRaw(messages, { maxTokens = 4096, temperature = 0.2 } = {}) {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = getLlmApiKey();
   if (!apiKey) {
     throw new Error('GROQ_API_KEY is missing from env.');
   }
 
-  const response = await fetch(GROQ_API_URL, {
+  const response = await fetch(getLlmEndpoint(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

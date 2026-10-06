@@ -4,13 +4,10 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
 import GraphModel from '../models/Graph.js';
+import { getGroqModel, getLlmApiKey, getLlmEndpoint } from '../lib/groq.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
-const configuredGroqModel = process.env.GROQ_MODEL?.trim();
-const GROQ_MODEL = configuredGroqModel && configuredGroqModel !== 'llama-3.1-8b-instant'
-  ? configuredGroqModel
-  : 'groq/compound-mini';
 
 function chunkText(text, size = 100000) {
   const chunks = [];
@@ -50,19 +47,19 @@ function extractJson(text) {
 }
 
 async function callGroq(messages, { maxTokens = 4096, temperature = 0.2 } = {}) {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = getLlmApiKey();
   if (!apiKey) {
     throw new Error('GROQ_API_KEY is missing from env.');
   }
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const response = await fetch(getLlmEndpoint(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model: getGroqModel(),
       messages,
       max_tokens: maxTokens,
       temperature,
@@ -271,7 +268,7 @@ router.post('/upload', upload.single('pdf'), async (req, res) => {
     const extractedText = data.text;
     if (!extractedText) return res.status(400).json({ success: false, error: 'Text extraction failed' });
 
-    console.log(`Processing with Groq ${GROQ_MODEL}: ${extractedText.length} chars`);
+    console.log(`Processing with Groq ${getGroqModel()}: ${extractedText.length} chars`);
 
     // 1. Summary
     const metadata = await generateSummary(extractedText);
